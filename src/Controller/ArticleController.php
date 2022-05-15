@@ -14,4 +14,14 @@ class ArticleController
     {
         return new Response("OMG!");
     }
+
+    /**
+     * @Route(path="/news/{slug}")
+     */
+    public function show(string $slug): Response
+    {
+        return new Response(sprintf(
+            "Meu slug é: '%s'", $slug
+        ));
+    }
 }
