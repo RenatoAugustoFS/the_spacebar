@@ -3,21 +3,24 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
     /**
-     * @Route(path="/", name="app_homepage", methods={"GET"})
+     * @Route(path="/", name="app_article_homepage", methods={"GET"})
      */
-    public function homepage(): Response
+    public function homepage(Request $request): Response
     {
-        return new Response("OMG!");
+        //dd($request);
+        return $this->render('article/homepage.html.twig');
     }
 
     /**
-     * @Route(path="/news/{slug}")
+     * @Route(path="/news/{slug}", name="app_article_show")
      */
     public function show(string $slug): Response
     {
@@ -30,6 +33,16 @@ class ArticleController extends AbstractController
         return $this->render('article/show.html.twig', [
             'title' => ucwords(str_replace('-', ' ', $slug)),
             'comments' => $comments,
+            'slug' => $slug
         ]);
+    }
+
+    /**
+     * @Route(path="/news/{slug}/heart", name="app_article_toggle_heart", methods={"POST"})
+     */
+    public function toggleArticleHeart(Request $request): Response
+    {
+        // TODO - actually heart/unheart the article!
+        return new JsonResponse(['hearts' => random_int(1, 100)]);
     }
 }
