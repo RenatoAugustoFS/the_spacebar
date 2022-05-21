@@ -5,10 +5,12 @@ namespace App\Controller;
 use Michelf\MarkdownInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ArticleController extends AbstractController
 {
@@ -24,9 +26,8 @@ class ArticleController extends AbstractController
     /**
      * @Route(path="/news/{slug}", name="app_article_show")
      */
-    public function show(string $slug, MarkdownInterface $markdown): Response
+    public function show(string $slug, MarkdownInterface $markdown, AdapterInterface $cache, CacheInterface $cacheManager): Response
     {
-
         $articleContent = <<<EOF
         Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
         lorem proident [beef ribs](https://baconipsum.com/)  aute enim veniam ut cillum pork chuck picanha. Dolore reprehenderit
@@ -46,12 +47,26 @@ class ArticleController extends AbstractController
 
         $articleContent = $markdown->transform($articleContent);
 
+        //PSR6
+        $item = $cache->getItem('markdown_' . md5($articleContent));
+        if (!$item->isHit()){
+            $item->set($markdown->transform($articleContent));
+            $cache->save($item);
+        }
+        $articleContent = $item->get();
+
+        /*
+         * CONTRATO DE CACHE
+        $articleContent = $cacheManager->get('markdown_'.md5($articleContent), function() use ($markdown, $articleContent) {
+            return $markdown->transform($articleContent);
+        });
+        */
+
         $comments = [
             'I ate a normal rock once. It did NOT taste like bacon!',
             'Woohoo! I\'m going on an all-asteroid diet!',
             'I like bacon too! Buy some from my site! bakinsomebacon.com',
         ];
-
 
         return $this->render('article/show.html.twig', [
             'title' => ucwords(str_replace('-', ' ', $slug)),
@@ -64,7 +79,7 @@ class ArticleController extends AbstractController
     /**
      * @Route(path="/news/{slug}/heart", name="app_article_toggle_heart", methods={"POST"})
      */
-    public function toggleArticleHeart(Request $request, LoggerInterface $logger): Response
+    public function toggleArticleHeart(LoggerInterface $logger): Response
     {
         // TODO - actually heart/unheart the article!
         $logger->info('Article is being hearted!');
