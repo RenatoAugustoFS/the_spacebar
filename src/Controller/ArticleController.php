@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use Michelf\MarkdownInterface;
+use App\Service\Markdown\MarkdownHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class ArticleController extends AbstractController
 {
@@ -26,7 +24,7 @@ class ArticleController extends AbstractController
     /**
      * @Route(path="/news/{slug}", name="app_article_show")
      */
-    public function show(string $slug, MarkdownInterface $markdown, AdapterInterface $cache, CacheInterface $cacheManager): Response
+    public function show(string $slug, MarkdownHelper $markdownHelper): Response
     {
         $articleContent = <<<EOF
         Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
@@ -45,22 +43,7 @@ class ArticleController extends AbstractController
         fugiat.
         EOF;
 
-        $articleContent = $markdown->transform($articleContent);
-
-        //PSR6
-        $item = $cache->getItem('markdown_' . md5($articleContent));
-        if (!$item->isHit()){
-            $item->set($markdown->transform($articleContent));
-            $cache->save($item);
-        }
-        $articleContent = $item->get();
-
-        /*
-         * CONTRATO DE CACHE
-        $articleContent = $cacheManager->get('markdown_'.md5($articleContent), function() use ($markdown, $articleContent) {
-            return $markdown->transform($articleContent);
-        });
-        */
+        $articleContent = $markdownHelper->parse($articleContent);
 
         $comments = [
             'I ate a normal rock once. It did NOT taste like bacon!',
