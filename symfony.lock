@@ -14,6 +14,9 @@
     "doctrine/lexer": {
         "version": "1.2.3"
     },
+    "ehime/hello-world": {
+        "version": "1.0.5"
+    },
     "knplabs/knp-markdown-bundle": {
         "version": "1.10.0"
     },

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\Markdown\MarkdownHelper;
+use HelloWorld\SayHello;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,10 +16,12 @@ class ArticleController extends AbstractController
     /**
      * @Route(path="/", name="app_article_homepage", methods={"GET"})
      */
-    public function homepage(Request $request): Response
+    public function homepage(Request $request, SayHello $hello): Response
     {
         //dd($request);
-        return $this->render('article/homepage.html.twig');
+        return $this->render('article/homepage.html.twig', [
+            'hello-world-packagist' => $hello::world()
+        ]);
     }
 
     /**
