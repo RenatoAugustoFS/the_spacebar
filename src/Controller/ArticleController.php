@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helper\LoggerTrait;
 use App\Service\Markdown\MarkdownHelper;
 use HelloWorld\SayHello;
 use Psr\Log\LoggerInterface;
@@ -13,6 +14,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
+    use LoggerTrait;
+
     /**
      * @Route(path="/", name="app_article_homepage", methods={"GET"})
      */
@@ -65,10 +68,11 @@ class ArticleController extends AbstractController
     /**
      * @Route(path="/news/{slug}/heart", name="app_article_toggle_heart", methods={"POST"})
      */
-    public function toggleArticleHeart(LoggerInterface $logger): Response
+    public function toggleArticleHeart(): Response
     {
         // TODO - actually heart/unheart the article!
-        $logger->info('Article is being hearted!');
+
+        $this->logInfo('Article is being hearted!');
         return new JsonResponse(['hearts' => random_int(1, 100)]);
     }
 }
