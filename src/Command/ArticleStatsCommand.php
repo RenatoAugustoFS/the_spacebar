@@ -23,7 +23,7 @@ class ArticleStatsCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $slug = $input->getArgument('slug');
@@ -45,5 +45,7 @@ class ArticleStatsCommand extends Command
             default:
                 throw new \Exception('What kind of crazy format is that!?');
         }
+
+        return 0;
     }
 }

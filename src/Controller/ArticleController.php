@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Helper\LoggerTrait;
 use App\Service\Markdown\MarkdownHelper;
 use HelloWorld\SayHello;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
